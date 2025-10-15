@@ -1,7 +1,7 @@
 name: base_url_switcher
 description: "A Flutter package for switching between base URLs with a beautiful UI switcher"
 version: 1.0.0
-homepage: https://github.com/ahmed-elsayed/base_url_switcher
+homepage: https://github.com/asamiiii/base_url_switcher
 
 environment:
   sdk: ^3.8.1

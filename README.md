@@ -47,7 +47,67 @@ void main() async {
 }
 ```
 
-### 2. Use the Environment Switcher
+### 2. Use the Ready-to-Use Screen (Easiest Way)
+
+```dart
+import 'package:base_url_switcher/base_url_switcher.dart';
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('My App'),
+          actions: [
+            // زر للذهاب إلى صفحة تبديل البيئات
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EnvSwitcherScreen(
+                      title: 'Environment Settings',
+                      icon: Icons.swap_horiz,
+                      primaryColor: Colors.blue,
+                      onEnvironmentChanged: (env) {
+                        print('Switched to ${env.name}');
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        body: MyHomePage(),
+      ),
+    );
+  }
+}
+```
+
+### 3. Access Current Base URL (Super Easy)
+
+```dart
+import 'package:base_url_switcher/base_url_switcher.dart';
+
+// الحصول على الـ Base URL الحالي
+final currentUrl = BaseUrlManager.instance.currentBaseUrl;
+print('Current Base URL: $currentUrl');
+
+// الحصول على اسم البيئة الحالية
+final envName = BaseUrlManager.instance.currentEnvironmentName;
+print('Current Environment: $envName');
+
+// استخدام الـ URL في API calls
+final response = await http.get(
+  Uri.parse('${BaseUrlManager.instance.currentBaseUrl}/api/users'),
+);
+```
+
+### 4. Use the Widget (Alternative)
 
 ```dart
 import 'package:base_url_switcher/base_url_switcher.dart';
@@ -75,23 +135,6 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### 3. Access Current Environment
-
-```dart
-final envService = EnvService.instance;
-
-// Get current environment
-final currentEnv = envService.currentEnvironment;
-print('Current environment: ${currentEnv.name}');
-print('Base URL: ${currentEnv.baseUrl}');
-
-// Get current base URL directly
-final baseUrl = envService.currentBaseUrl;
-
-// Get configuration values
-final timeout = envService.getConfigValue<int>('timeout');
-```
-
 ## Default Environments
 
 The package comes with three default environments:
@@ -99,6 +142,94 @@ The package comes with three default environments:
 - **Development** - `https://dev-api.example.com`
 - **Staging** - `https://staging-api.example.com`
 - **Production** - `https://api.example.com`
+
+## 🚀 Ultra Simple Usage (Recommended)
+
+### Just Wrap Your Widget - That's It!
+
+```dart
+import 'package:base_url_switcher/base_url_switcher.dart';
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('My App')),
+        body: SimpleBaseUrlWrapper(
+          // فقط wrap الـ body - الباقي تلقائي!
+          child: YourWidget(),
+        ),
+      ),
+    );
+  }
+}
+```
+
+### How It Works:
+1. **Wrap your widget** with `SimpleBaseUrlWrapper`
+2. **Tap anywhere 7 times** quickly to access settings
+3. **Enter password** (default: "admin")
+4. **Change environment** and use the new Base URL
+
+### Customize Access:
+
+```dart
+SimpleBaseUrlWrapper(
+  password: "myapp123", // باسورد مخصص
+  tapCount: 5, // 5 ضغطات بدلاً من 7
+  child: YourWidget(),
+)
+```
+
+### Show Current Environment:
+
+```dart
+AppBar(
+  title: Text('My App'),
+  actions: [
+    EnvironmentIndicator(), // مؤشر البيئة الحالية
+  ],
+)
+```
+
+### Get Base URL Anywhere:
+
+```dart
+// في أي مكان في التطبيق
+final url = BaseUrlManager.instance.currentBaseUrl;
+final response = await http.get(Uri.parse('$url/api/users'));
+```
+
+## Alternative Usage
+
+### Add Settings Screen Manually
+
+```dart
+// في أي مكان في التطبيق
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => EnvSwitcherScreen(),
+  ),
+);
+```
+
+### Set Your Own Default Base URL
+
+```dart
+// في main() قبل runApp()
+await EnvService.initialize();
+
+// إضافة بيئة مخصصة كافتراضي
+final customEnv = BaseUrlManager.createDevelopmentEnv(
+  baseUrl: 'https://your-api.com',
+  description: 'Your custom API',
+);
+
+await BaseUrlManager.instance.addEnvironment(customEnv);
+await BaseUrlManager.instance.setEnvironment('Development');
+```
 
 ## Customization
 
