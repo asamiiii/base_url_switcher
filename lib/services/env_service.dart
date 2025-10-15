@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/environment.dart';
+import '../models/environment_type.dart';
 
 /// Service class for managing environment configurations
 class EnvService {
@@ -20,27 +21,92 @@ class EnvService {
   }
   
   /// Initialize the service with SharedPreferences
-  static Future<void> initialize() async {
+  static Future<void> initialize({
+    String? developmentUrl,
+    String? productionUrl,
+    String? stagingUrl,
+    EnvironmentType? defaultEnvironment,
+  }) async {
     _prefs ??= await SharedPreferences.getInstance();
+    
+    // If custom URLs are provided, add them
+    if (developmentUrl != null || productionUrl != null || stagingUrl != null) {
+      await _setupCustomEnvironments(
+        developmentUrl: developmentUrl,
+        productionUrl: productionUrl,
+        stagingUrl: stagingUrl,
+        defaultEnvironment: defaultEnvironment,
+      );
+    }
+  }
+  
+  /// Setup custom environments
+  static Future<void> _setupCustomEnvironments({
+    String? developmentUrl,
+    String? productionUrl,
+    String? stagingUrl,
+    EnvironmentType? defaultEnvironment,
+  }) async {
+    final instance = EnvService.instance;
+    
+    // Add development environment
+    if (developmentUrl != null) {
+      final devEnv = Environment(
+        name: EnvironmentType.development.displayName,
+        baseUrl: developmentUrl,
+        description: EnvironmentType.development.description,
+        isDefault: defaultEnvironment == EnvironmentType.development,
+      );
+      await instance.addEnvironment(devEnv);
+    }
+    
+    // Add production environment
+    if (productionUrl != null) {
+      final prodEnv = Environment(
+        name: EnvironmentType.production.displayName,
+        baseUrl: productionUrl,
+        description: EnvironmentType.production.description,
+        isDefault: defaultEnvironment == EnvironmentType.production,
+      );
+      await instance.addEnvironment(prodEnv);
+    }
+    
+    // Add staging environment
+    if (stagingUrl != null) {
+      final stagingEnv = Environment(
+        name: EnvironmentType.staging.displayName,
+        baseUrl: stagingUrl,
+        description: EnvironmentType.staging.description,
+        isDefault: defaultEnvironment == EnvironmentType.staging,
+      );
+      await instance.addEnvironment(stagingEnv);
+    }
+    
+    // Set default environment
+    if (defaultEnvironment != null) {
+      await instance.setEnvironment(defaultEnvironment.displayName);
+    } else if (developmentUrl != null) {
+      await instance.setEnvironment(EnvironmentType.development.displayName);
+    }
   }
   
   /// Default environments
   static final Map<String, Environment> _defaultEnvironments = {
     'development': Environment(
-      name: 'Development',
+      name: EnvironmentType.development.displayName,
       baseUrl: 'https://dev-api.example.com',
-      description: 'Development environment for testing',
+      description: EnvironmentType.development.description,
       isDefault: true,
     ),
     'staging': Environment(
-      name: 'Staging',
+      name: EnvironmentType.staging.displayName,
       baseUrl: 'https://staging-api.example.com',
-      description: 'Staging environment for pre-production testing',
+      description: EnvironmentType.staging.description,
     ),
     'production': Environment(
-      name: 'Production',
+      name: EnvironmentType.production.displayName,
       baseUrl: 'https://api.example.com',
-      description: 'Production environment',
+      description: EnvironmentType.production.description,
     ),
   };
   

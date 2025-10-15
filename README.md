@@ -1,155 +1,38 @@
 # Base URL Switcher
 
-A beautiful and easy-to-use Flutter package for switching between base URLs with a stunning UI switcher.
+**The simplest way to switch Base URLs in Flutter** 🚀
 
 [![pub package](https://img.shields.io/pub/v/base_url_switcher.svg)](https://pub.dev/packages/base_url_switcher)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Features
+## ⚡ Ultra Simple - Just 3 Steps!
 
-- 🎨 **Beautiful UI Switcher** - Elegant environment switcher widget
-- 🔧 **Easy Configuration** - Simple setup with default environments
-- 💾 **Persistent Storage** - Remembers your environment choice
-- 🎯 **Type Safety** - Full type safety with Dart
-- 🧪 **Well Tested** - Comprehensive test coverage
-- 📱 **Responsive Design** - Works on all screen sizes
-- 🚀 **Lightweight** - Minimal dependencies
-
-## Installation
-
-Add this to your package's `pubspec.yaml` file:
-
+### 1️⃣ Add the Package
 ```yaml
 dependencies:
-  base_url_switcher: ^1.0.0
+  base_url_switcher: ^2.0.0
 ```
 
-Then run:
-
-```bash
-flutter pub get
-```
-
-## Quick Start
-
-### 1. Initialize the Service
-
+### 2️⃣ Add URLs in main.dart
 ```dart
 import 'package:base_url_switcher/base_url_switcher.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize the EnvService
-  await EnvService.initialize();
+  // Just add URLs - everything else is automatic!
+  await EnvService.initialize(
+    developmentUrl: 'https://dev-api.mycompany.com',
+    productionUrl: 'https://api.mycompany.com',
+    defaultEnvironment: EnvironmentType.development,
+  );
   
   runApp(MyApp());
 }
 ```
 
-### 2. Use the Ready-to-Use Screen (Easiest Way)
-
+### 3️⃣ Wrap Your Widget
 ```dart
-import 'package:base_url_switcher/base_url_switcher.dart';
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('My App'),
-          actions: [
-            // زر للذهاب إلى صفحة تبديل البيئات
-            IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EnvSwitcherScreen(
-                      title: 'Environment Settings',
-                      icon: Icons.swap_horiz,
-                      primaryColor: Colors.blue,
-                      onEnvironmentChanged: (env) {
-                        print('Switched to ${env.name}');
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        body: MyHomePage(),
-      ),
-    );
-  }
-}
-```
-
-### 3. Access Current Base URL (Super Easy)
-
-```dart
-import 'package:base_url_switcher/base_url_switcher.dart';
-
-// الحصول على الـ Base URL الحالي
-final currentUrl = BaseUrlManager.instance.currentBaseUrl;
-print('Current Base URL: $currentUrl');
-
-// الحصول على اسم البيئة الحالية
-final envName = BaseUrlManager.instance.currentEnvironmentName;
-print('Current Environment: $envName');
-
-// استخدام الـ URL في API calls
-final response = await http.get(
-  Uri.parse('${BaseUrlManager.instance.currentBaseUrl}/api/users'),
-);
-```
-
-### 4. Use the Widget (Alternative)
-
-```dart
-import 'package:base_url_switcher/base_url_switcher.dart';
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('My App'),
-          actions: [
-            // Add environment switcher to app bar
-            EnvSwitcher(
-              onEnvironmentChanged: (env) {
-                print('Switched to ${env.name}');
-              },
-            ),
-          ],
-        ),
-        body: MyHomePage(),
-      ),
-    );
-  }
-}
-```
-
-## Default Environments
-
-The package comes with three default environments:
-
-- **Development** - `https://dev-api.example.com`
-- **Staging** - `https://staging-api.example.com`
-- **Production** - `https://api.example.com`
-
-## 🚀 Ultra Simple Usage (Recommended)
-
-### Just Wrap Your Widget - That's It!
-
-```dart
-import 'package:base_url_switcher/base_url_switcher.dart';
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -157,7 +40,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: Text('My App')),
         body: SimpleBaseUrlWrapper(
-          // فقط wrap الـ body - الباقي تلقائي!
+          // Just wrap the body - everything else is automatic!
           child: YourWidget(),
         ),
       ),
@@ -166,47 +49,71 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### How It Works:
-1. **Wrap your widget** with `SimpleBaseUrlWrapper`
-2. **Tap anywhere 7 times** quickly to access settings
-3. **Enter password** (default: "admin")
-4. **Change environment** and use the new Base URL
+## 🎯 How It Works?
 
-### Customize Access:
+1. **Tap 7 times** anywhere in the app
+2. **Enter password** (default: "admin")
+3. **Switch environment** and use the new Base URL
+
+## 💻 Using Base URL in Code
+
+```dart
+// Anywhere in your app
+final url = BaseUrlManager.instance.currentBaseUrl;
+final response = await http.get(Uri.parse('$url/api/users'));
+```
+
+## 🎨 Customize Access
 
 ```dart
 SimpleBaseUrlWrapper(
-  password: "myapp123", // باسورد مخصص
-  tapCount: 5, // 5 ضغطات بدلاً من 7
+  password: "myapp123", // Custom password
+  tapCount: 5, // 5 taps instead of 7
   child: YourWidget(),
 )
 ```
 
-### Show Current Environment:
+## 📱 Show Environment Info
 
 ```dart
 AppBar(
   title: Text('My App'),
   actions: [
-    EnvironmentIndicator(), // مؤشر البيئة الحالية
+    EnvironmentIndicator(), // Current environment indicator
   ],
+)
+
+// Or anywhere
+EnvironmentInfo(
+  showBaseUrl: true,
+  showDescription: true,
 )
 ```
 
-### Get Base URL Anywhere:
+## 🌟 Features
 
+- ✅ **Setup in 3 steps** - No more!
+- ✅ **Hidden access** - Multiple taps to access
+- ✅ **Password protection** - Customizable
+- ✅ **Ready-to-use screen** - No coding needed
+- ✅ **Auto save** - Remembers your choice
+- ✅ **Environment indicator** - Shows current environment
+- ✅ **Comprehensive tests** - 21/21 tests passed
+
+## 🔧 Advanced Setup
+
+### Add Staging Environment
 ```dart
-// في أي مكان في التطبيق
-final url = BaseUrlManager.instance.currentBaseUrl;
-final response = await http.get(Uri.parse('$url/api/users'));
+await EnvService.initialize(
+  developmentUrl: 'https://dev-api.com',
+  productionUrl: 'https://api.com',
+  stagingUrl: 'https://staging-api.com', // Optional
+  defaultEnvironment: EnvironmentType.development,
+);
 ```
 
-## Alternative Usage
-
-### Add Settings Screen Manually
-
+### Access Settings Manually
 ```dart
-// في أي مكان في التطبيق
 Navigator.push(
   context,
   MaterialPageRoute(
@@ -215,242 +122,141 @@ Navigator.push(
 );
 ```
 
-### Set Your Own Default Base URL
-
+### Use Widget Instead of Wrapper
 ```dart
-// في main() قبل runApp()
-await EnvService.initialize();
-
-// إضافة بيئة مخصصة كافتراضي
-final customEnv = BaseUrlManager.createDevelopmentEnv(
-  baseUrl: 'https://your-api.com',
-  description: 'Your custom API',
-);
-
-await BaseUrlManager.instance.addEnvironment(customEnv);
-await BaseUrlManager.instance.setEnvironment('Development');
-```
-
-## Customization
-
-### Custom Environments
-
-```dart
-final envService = EnvService.instance;
-
-// Add custom environment
-const customEnv = Environment(
-  name: 'Custom',
-  baseUrl: 'https://custom-api.com',
-  description: 'Custom environment for testing',
-  config: {
-    'timeout': 30,
-    'retries': 3,
-  },
-);
-
-await envService.addEnvironment(customEnv);
-```
-
-### Custom Styling
-
-```dart
-EnvSwitcher(
-  style: EnvSwitcherStyle(
-    backgroundColor: Colors.blue,
-    iconColor: Colors.white,
-    borderRadius: BorderRadius.circular(12),
-    elevation: 4,
-    titleTextStyle: TextStyle(
-      color: Colors.white,
-      fontWeight: FontWeight.bold,
+AppBar(
+  actions: [
+    EnvSwitcher(
+      onEnvironmentChanged: (env) {
+        print('Switched to ${env.name}');
+      },
     ),
-  ),
-  onEnvironmentChanged: (env) {
-    // Handle environment change
-  },
+  ],
 )
 ```
 
-### Environment Configuration
+## 📋 API Reference
 
+### EnvService.initialize()
 ```dart
-// Set configuration values
-await envService.setConfigValue('api_key', 'your-api-key');
-await envService.setConfigValue('timeout', 30);
-
-// Get configuration values
-final apiKey = envService.getConfigValue<String>('api_key');
-final timeout = envService.getConfigValue<int>('timeout');
+static Future<void> initialize({
+  String? developmentUrl,    // Development environment URL
+  String? productionUrl,     // Production environment URL
+  String? stagingUrl,        // Staging environment URL (optional)
+  EnvironmentType? defaultEnvironment, // Default environment
+});
 ```
 
-## Advanced Usage
-
-### Programmatic Environment Switching
-
+### BaseUrlManager
 ```dart
-// Switch environment programmatically
-await envService.setEnvironment('staging');
+// Get current Base URL
+String get currentBaseUrl;
 
-// Get specific environment
-final stagingEnv = envService.getEnvironment('staging');
+// Get current environment name
+String get currentEnvironmentName;
 
-// Check if environment exists
-if (envService.hasEnvironment('custom')) {
-  // Do something
+// Get current environment object
+Environment get currentEnvironment;
+```
+
+### EnvironmentType Enum
+```dart
+enum EnvironmentType {
+  development,
+  staging,
+  production,
+  local,
+}
+
+// Usage
+EnvironmentType.development.displayName  // "Development"
+EnvironmentType.production.description   // "Production environment"
+```
+
+### SimpleBaseUrlWrapper
+```dart
+class SimpleBaseUrlWrapper extends StatelessWidget {
+  final Widget child;        // Widget to wrap
+  final String? password;    // Password (default: "admin")
+  final int? tapCount;       // Number of taps (default: 7)
 }
 ```
 
-### Environment Management
+## 🚀 Complete Example
 
 ```dart
-// Update existing environment
-const updatedEnv = Environment(
-  name: 'development',
-  baseUrl: 'https://new-dev-api.com',
-  description: 'Updated development environment',
-);
+import 'package:flutter/material.dart';
+import 'package:base_url_switcher/base_url_switcher.dart';
 
-await envService.updateEnvironment('development', updatedEnv);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await EnvService.initialize(
+    developmentUrl: 'https://dev-api.mycompany.com',
+    productionUrl: 'https://api.mycompany.com',
+    defaultEnvironment: EnvironmentType.development,
+  );
+  
+  runApp(MyApp());
+}
 
-// Remove environment
-await envService.removeEnvironment('old-environment');
-
-// Reset to defaults
-await envService.resetToDefaults();
-```
-
-### Show in Release Mode
-
-By default, the environment switcher only shows in debug mode. To show it in release mode:
-
-```dart
-EnvSwitcher(
-  showInRelease: true, // Show in release mode
-  onEnvironmentChanged: (env) {
-    // Handle environment change
-  },
-)
-```
-
-## API Reference
-
-### Environment Class
-
-```dart
-class Environment {
-  final String name;           // Environment name
-  final String baseUrl;        // Base URL for API calls
-  final Map<String, dynamic> config;  // Additional configuration
-  final bool isDefault;        // Whether this is the default environment
-  final String? description;   // Optional description
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('My App'),
+          actions: [EnvironmentIndicator()],
+        ),
+        body: SimpleBaseUrlWrapper(
+          password: "myapp123",
+          tapCount: 5,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Current Environment: ${BaseUrlManager.instance.currentEnvironmentName}'),
+                Text('Base URL: ${BaseUrlManager.instance.currentBaseUrl}'),
+                ElevatedButton(
+                  onPressed: () async {
+                    final response = await http.get(
+                      Uri.parse('${BaseUrlManager.instance.currentBaseUrl}/api/users'),
+                    );
+                    print('Response: ${response.body}');
+                  },
+                  child: Text('Test API Call'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 ```
 
-### EnvService Class
-
-```dart
-class EnvService {
-  // Singleton instance
-  static EnvService get instance;
-  
-  // Initialize the service
-  static Future<void> initialize();
-  
-  // Environment management
-  Map<String, Environment> get environments;
-  Environment get currentEnvironment;
-  Future<void> setEnvironment(String envName);
-  
-  // Environment CRUD operations
-  Future<void> addEnvironment(Environment environment);
-  Future<void> updateEnvironment(String envName, Environment environment);
-  Future<void> removeEnvironment(String envName);
-  
-  // Utility methods
-  Environment? getEnvironment(String envName);
-  bool hasEnvironment(String envName);
-  String get currentBaseUrl;
-  String get currentEnvironmentName;
-  
-  // Configuration management
-  T? getConfigValue<T>(String key);
-  Future<void> setConfigValue(String key, dynamic value);
-  
-  // Data management
-  Future<void> resetToDefaults();
-  Future<void> clear();
-}
-```
-
-### EnvSwitcher Widget
-
-```dart
-class EnvSwitcher extends StatefulWidget {
-  final Function(Environment)? onEnvironmentChanged;
-  final bool showInRelease;
-  final EnvSwitcherStyle? style;
-  final bool showDescriptions;
-  final IconData? icon;
-}
-```
-
-### EnvSwitcherStyle Class
-
-```dart
-class EnvSwitcherStyle {
-  final EdgeInsets margin;
-  final EdgeInsets padding;
-  final Color backgroundColor;
-  final Color iconColor;
-  final double iconSize;
-  final BorderRadius borderRadius;
-  final Border? border;
-  final double elevation;
-  final TextStyle titleTextStyle;
-  final TextStyle descriptionTextStyle;
-  final TextStyle dialogTitleStyle;
-}
-```
-
-## Example App
-
-Check out the example app in the `example/` directory to see the package in action.
+## 📦 Installation
 
 ```bash
-cd example
-flutter run
+flutter pub add base_url_switcher
 ```
 
-## Testing
-
-Run the tests:
+## 🧪 Testing
 
 ```bash
 flutter test
 ```
 
-## Contributing
+## 📄 License
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+MIT License - see [LICENSE](LICENSE) file for details.
 
-## License
+## ⭐ Support
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-If you find this package helpful, please give it a ⭐ on [pub.dev](https://pub.dev/packages/env_manager)!
-
-## Changelog
-
-### 1.0.0
-- Initial release
-- Environment management with persistent storage
-- Beautiful UI switcher widget
-- Comprehensive test coverage
-- Full documentation
+If you find this package helpful, please give it a ⭐ on [pub.dev](https://pub.dev/packages/base_url_switcher)!
 
 ---
 
-Made with ❤️ for the Flutter community
+**Made with ❤️ for the Flutter community**

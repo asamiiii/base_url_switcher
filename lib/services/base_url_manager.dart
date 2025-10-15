@@ -1,4 +1,5 @@
 import 'package:base_url_switcher/base_url_switcher.dart';
+import '../models/environment_type.dart';
 
 /// مدير مبسط للـ Base URL - يسهل الوصول للـ URL الحالي
 class BaseUrlManager {
@@ -53,46 +54,46 @@ class BaseUrlManager {
   /// مسح جميع البيانات
   Future<void> clear() => EnvService.instance.clear();
   
-  /// إنشاء بيئة تطوير مخصصة
+  /// Create custom development environment
   static Environment createDevelopmentEnv({
     required String baseUrl,
     String? description,
     Map<String, dynamic>? config,
   }) {
     return Environment(
-      name: 'Development',
+      name: EnvironmentType.development.displayName,
       baseUrl: baseUrl,
-      description: description ?? 'Development environment',
+      description: description ?? EnvironmentType.development.description,
       config: config ?? {},
       isDefault: true,
     );
   }
   
-  /// إنشاء بيئة إنتاج مخصصة
+  /// Create custom production environment
   static Environment createProductionEnv({
     required String baseUrl,
     String? description,
     Map<String, dynamic>? config,
   }) {
     return Environment(
-      name: 'Production',
+      name: EnvironmentType.production.displayName,
       baseUrl: baseUrl,
-      description: description ?? 'Production environment',
+      description: description ?? EnvironmentType.production.description,
       config: config ?? {},
       isDefault: false,
     );
   }
   
-  /// إنشاء بيئة تجريبية مخصصة
+  /// Create custom staging environment
   static Environment createStagingEnv({
     required String baseUrl,
     String? description,
     Map<String, dynamic>? config,
   }) {
     return Environment(
-      name: 'Staging',
+      name: EnvironmentType.staging.displayName,
       baseUrl: baseUrl,
-      description: description ?? 'Staging environment',
+      description: description ?? EnvironmentType.staging.description,
       config: config ?? {},
       isDefault: false,
     );

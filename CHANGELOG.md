@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2025-01-15
+
+### Added
+- 🚀 **Ultra Simple Usage** - Just wrap your widget with `SimpleBaseUrlWrapper`
+- 🔐 **Hidden Access** - Tap multiple times to access settings
+- 🔒 **Password Protection** - Secure access with customizable password
+- 📱 **Ready-to-Use Screen** - Complete `EnvSwitcherScreen` included
+- 🎯 **Environment Indicator** - Show current environment in UI
+- 📊 **Environment Info Widget** - Display environment details
+- 🔧 **BaseUrlManager** - Simplified API for accessing current Base URL
+- 🎨 **Enhanced UI** - Beautiful and responsive design
+- 📚 **Comprehensive Examples** - Multiple usage examples included
+
+### Changed
+- Simplified API with `BaseUrlManager` for easier access
+- Enhanced UI components with better styling
+- Improved documentation with ultra-simple usage examples
+- Better error handling and user feedback
+
+### New Widgets
+- `SimpleBaseUrlWrapper` - Ultra-simple wrapper widget
+- `BaseUrlWrapper` - Full-featured wrapper with customization
+- `EnvironmentIndicator` - Show current environment in UI
+- `EnvironmentInfo` - Display environment details
+
+### Breaking Changes
+- None - fully backward compatible
+
 ## [1.0.0] - 2025-01-15
 
 ### Added

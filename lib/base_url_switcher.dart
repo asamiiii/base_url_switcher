@@ -2,6 +2,7 @@ library base_url_switcher;
 
 // Export all public APIs
 export 'models/environment.dart';
+export 'models/environment_type.dart';
 export 'services/env_service.dart';
 export 'services/base_url_manager.dart';
 export 'widgets/env_switcher.dart';
