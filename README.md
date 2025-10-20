@@ -10,7 +10,7 @@
 ### 1️⃣ Add the Package
 ```yaml
 dependencies:
-  base_url_switcher: ^2.1.1
+  base_url_switcher: ^2.1.2
 ```
 
 ### 2️⃣ Add URLs in main.dart
@@ -31,7 +31,7 @@ void main() async {
 }
 ```
 
-### 3️⃣ Wrap Your Widget
+### 3️⃣ Wrap the Widget You Want to Tap
 ```dart
 class MyApp extends StatelessWidget {
   @override
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: Text('My App')),
         body: SimpleBaseUrlWrapper(
-          // Just wrap the body - everything else is automatic!
+          // Wrap the widget that users will tap on to access settings
           child: YourWidget(),
         ),
       ),
@@ -49,11 +49,18 @@ class MyApp extends StatelessWidget {
 }
 ```
 
+**💡 Important:** The `SimpleBaseUrlWrapper` should wrap the widget that users will tap on to access the environment settings. This could be:
+- The entire body of your app
+- A specific button or logo  
+- Any interactive widget where you want the hidden access
+
 ## 🎯 How It Works?
 
-1. **Tap 7 times** anywhere in the app
+1. **Tap 7 times** on the wrapped widget (the one inside `SimpleBaseUrlWrapper`)
 2. **Enter password** (default: "admin")
 3. **Switch environment** and use the new Base URL
+
+**📍 Where to tap:** Users tap on the widget that's wrapped with `SimpleBaseUrlWrapper`. This could be your app's body, a logo, or any specific area you choose.
 
 ## 💻 Using Base URL in Code
 
@@ -66,10 +73,26 @@ final response = await http.get(Uri.parse('$url/api/users'));
 ## 🎨 Customize Access
 
 ```dart
+// Example 1: Wrap entire app body
 SimpleBaseUrlWrapper(
   password: "myapp123", // Custom password
   tapCount: 5, // 5 taps instead of 7
   child: YourWidget(),
+)
+
+// Example 2: Wrap only a specific logo/button
+SimpleBaseUrlWrapper(
+  child: Image.asset('assets/logo.png'), // Users tap on logo
+)
+
+// Example 3: Wrap a specific area
+SimpleBaseUrlWrapper(
+  child: Container(
+    width: 100,
+    height: 100,
+    color: Colors.blue,
+    child: Center(child: Text('Tap here')),
+  ),
 )
 ```
 

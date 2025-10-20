@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2025-01-15
+
+### Documentation
+- 📚 **Improved README** - Added clear examples showing where to wrap `SimpleBaseUrlWrapper`
+- 💡 **Better Examples** - Added multiple examples for different use cases
+- 🎯 **Clearer Instructions** - Explained exactly where users should tap to access settings
+
+### Examples Added
+- Wrap entire app body
+- Wrap specific logo/button
+- Wrap custom area with tap instructions
+
 ## [2.1.1] - 2025-01-15
 
 ### Fixed
