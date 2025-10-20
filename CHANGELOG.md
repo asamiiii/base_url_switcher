@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2025-01-15
+
+### Fixed
+- 🐛 **Critical Bug Fix** - Fixed "Environment not found" error when setting default environment
+- 🔧 **Case Sensitivity** - Fixed case sensitivity issues in environment lookup
+- 🧹 **Empty State Handling** - Added proper handling for empty environments map
+- ✅ **Test Coverage** - All tests now pass successfully
+
+### Technical Details
+- Fixed `setEnvironment()` method to use lowercase keys consistently
+- Fixed `currentEnvironment` getter to handle empty environments map
+- Fixed `clear()` method to properly clear in-memory environments
+- Added fallback environment when no environments exist
+
 ## [2.1.0] - 2025-01-15
 
 ### Added

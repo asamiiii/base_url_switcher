@@ -29,8 +29,9 @@ class EnvService {
   }) async {
     _prefs ??= await SharedPreferences.getInstance();
     
-    // If custom URLs are provided, add them
+    // If custom URLs are provided, clear existing environments and add them
     if (developmentUrl != null || productionUrl != null || stagingUrl != null) {
+      await instance.clear();
       await _setupCustomEnvironments(
         developmentUrl: developmentUrl,
         productionUrl: productionUrl,
@@ -55,7 +56,7 @@ class EnvService {
         name: EnvironmentType.development.displayName,
         baseUrl: developmentUrl,
         description: EnvironmentType.development.description,
-        isDefault: defaultEnvironment == EnvironmentType.development,
+        isDefault: false, // We'll set the default after adding all environments
       );
       await instance.addEnvironment(devEnv);
     }
@@ -66,7 +67,7 @@ class EnvService {
         name: EnvironmentType.production.displayName,
         baseUrl: productionUrl,
         description: EnvironmentType.production.description,
-        isDefault: defaultEnvironment == EnvironmentType.production,
+        isDefault: false, // We'll set the default after adding all environments
       );
       await instance.addEnvironment(prodEnv);
     }
@@ -77,14 +78,22 @@ class EnvService {
         name: EnvironmentType.staging.displayName,
         baseUrl: stagingUrl,
         description: EnvironmentType.staging.description,
-        isDefault: defaultEnvironment == EnvironmentType.staging,
+        isDefault: false, // We'll set the default after adding all environments
       );
       await instance.addEnvironment(stagingEnv);
     }
     
-    // Set default environment
+    // Set default environment after all environments are added
     if (defaultEnvironment != null) {
-      await instance.setEnvironment(defaultEnvironment.displayName);
+      // Check if the requested default environment exists
+      if (instance.hasEnvironment(defaultEnvironment.displayName)) {
+        await instance.setEnvironment(defaultEnvironment.displayName);
+      } else {
+        // Fallback to development if the requested environment doesn't exist
+        if (instance.hasEnvironment(EnvironmentType.development.displayName)) {
+          await instance.setEnvironment(EnvironmentType.development.displayName);
+        }
+      }
     } else if (developmentUrl != null) {
       await instance.setEnvironment(EnvironmentType.development.displayName);
     }
@@ -122,11 +131,21 @@ class EnvService {
   /// Get current environment
   Environment get currentEnvironment {
     final currentEnvName = _prefs?.getString(_currentEnvKey);
-    if (currentEnvName != null && environments.containsKey(currentEnvName)) {
-      return environments[currentEnvName]!;
+    if (currentEnvName != null && environments.containsKey(currentEnvName.toLowerCase())) {
+      return environments[currentEnvName.toLowerCase()]!;
     }
     
-    // Return default environment
+    // Return default environment or first available
+    if (environments.isEmpty) {
+      // If no environments exist, return a default one
+      return Environment(
+        name: EnvironmentType.development.displayName,
+        baseUrl: 'https://dev-api.example.com',
+        description: EnvironmentType.development.description,
+        isDefault: true,
+      );
+    }
+    
     final defaultEnv = environments.values.firstWhere(
       (env) => env.isDefault,
       orElse: () => environments.values.first,
@@ -136,7 +155,7 @@ class EnvService {
   
   /// Set current environment
   Future<void> setEnvironment(String envName) async {
-    if (!environments.containsKey(envName)) {
+    if (!environments.containsKey(envName.toLowerCase())) {
       throw ArgumentError('Environment "$envName" not found');
     }
     
@@ -242,5 +261,6 @@ class EnvService {
   Future<void> clear() async {
     await _prefs?.remove(_currentEnvKey);
     await _prefs?.remove(_environmentsKey);
+    environments.clear();
   }
 }
