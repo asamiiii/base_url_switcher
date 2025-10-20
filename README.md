@@ -10,7 +10,7 @@
 ### 1️⃣ Add the Package
 ```yaml
 dependencies:
-  base_url_switcher: ^2.0.0
+  base_url_switcher: ^2.1.0
 ```
 
 ### 2️⃣ Add URLs in main.dart

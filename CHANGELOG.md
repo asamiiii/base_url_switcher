@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-01-15
+
+### Added
+- 🎯 **EnvironmentType Enum** - Type-safe environment management
+- 🔧 **Enhanced Type Safety** - No more string typos in environment names
+- 📝 **Auto-completion Support** - IDE support for environment types
+- 🎨 **Display Name Extensions** - Automatic formatting for environment names
+
+### Changed
+- `EnvService.initialize()` now accepts `EnvironmentType` instead of strings
+- All environment creation methods use enum for consistency
+- Improved type safety throughout the package
+
+### New Features
+- `EnvironmentType` enum with `development`, `staging`, `production`, `local`
+- Extension methods for display names and descriptions
+- Type-safe environment initialization
+
+### Breaking Changes
+- `EnvService.initialize(defaultEnvironment: String)` → `EnvService.initialize(defaultEnvironment: EnvironmentType)`
+
 ## [2.0.0] - 2025-01-15
 
 ### Added
