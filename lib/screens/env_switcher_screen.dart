@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:base_url_switcher/base_url_switcher.dart';
 
@@ -122,15 +121,6 @@ class _EnvSwitcherScreenState extends State<EnvSwitcherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // إذا كان في وضع الإنتاج ولا نريد إظهاره
-    if (!widget.showInRelease && !kDebugMode) {
-      return const Scaffold(
-        body: Center(
-          child: Text('Environment switcher is only available in debug mode'),
-        ),
-      );
-    }
-
     final primaryColor = widget.primaryColor ?? Theme.of(context).colorScheme.primary;
     final backgroundColor = widget.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
 
