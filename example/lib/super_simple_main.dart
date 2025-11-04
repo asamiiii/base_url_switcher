@@ -5,12 +5,11 @@ import 'package:base_url_switcher/base_url_switcher.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize service with URLs directly
+  // Initialize service with URLs directly - Production is always the default!
   await EnvService.initialize(
     developmentUrl: 'https://dev-api.mycompany.com',
     productionUrl: 'https://api.mycompany.com',
     stagingUrl: 'https://staging-api.mycompany.com',
-    defaultEnvironment: EnvironmentType.development, // Default environment
   );
   
   runApp(const MyApp());
