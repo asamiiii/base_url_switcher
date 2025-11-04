@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:base_url_switcher/base_url_switcher.dart';
+import '../models/configuration_item.dart';
 
 /// Widget wrapper سهل الاستخدام - فقط wrap الـ widget المطلوب
 class BaseUrlWrapper extends StatefulWidget {
@@ -26,6 +27,9 @@ class BaseUrlWrapper extends StatefulWidget {
   
   /// إظهار في وضع الإنتاج
   final bool showInRelease;
+  
+  /// List of custom configurations
+  final List<ConfigurationItem>? configurations;
 
   const BaseUrlWrapper({
     super.key,
@@ -37,6 +41,7 @@ class BaseUrlWrapper extends StatefulWidget {
     this.primaryColor,
     this.onEnvironmentChanged,
     this.showInRelease = false,
+    this.configurations,
   });
 
   @override
@@ -96,6 +101,7 @@ class _BaseUrlWrapperState extends State<BaseUrlWrapper> {
           primaryColor: widget.primaryColor ?? Theme.of(context).colorScheme.primary,
           onEnvironmentChanged: widget.onEnvironmentChanged,
           showInRelease: widget.showInRelease,
+          configurations: widget.configurations,
         ),
       ),
     );

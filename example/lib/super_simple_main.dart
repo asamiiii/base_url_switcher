@@ -148,7 +148,7 @@ class MyAppHomePage extends StatelessWidget {
                             ),
                             const Text(
                               'final url = BaseUrlManager.instance.currentBaseUrl;\n'
-                              'final response = await http.get(Uri.parse("$url/api/users"));',
+                              'final response = await http.get(Uri.parse("url/api/users"));',
                               style: TextStyle(
                                 fontFamily: 'monospace',
                                 fontSize: 11,

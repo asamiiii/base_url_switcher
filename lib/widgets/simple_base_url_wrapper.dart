@@ -11,12 +11,16 @@ class SimpleBaseUrlWrapper extends StatelessWidget {
   
   /// عدد مرات الضغط (افتراضي: 7)
   final int? tapCount;
+  
+  /// List of custom configurations
+  final List<ConfigurationItem>? configurations;
 
   const SimpleBaseUrlWrapper({
     super.key,
     required this.child,
     this.password,
     this.tapCount,
+    this.configurations,
   });
 
   @override
@@ -24,6 +28,7 @@ class SimpleBaseUrlWrapper extends StatelessWidget {
     return BaseUrlWrapper(
       tapCount: tapCount ?? 7,
       password: password ?? "admin",
+      configurations: configurations,
       child: child,
     );
   }

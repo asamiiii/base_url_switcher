@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2025-01-15
+
+### Added
+- 🎯 **Automatic Toggle State Management** - Configuration items now manage their own toggle state automatically!
+- ✨ **Simplified Configuration API** - No need for external state management (`setState` not required!)
+- 🔄 **State Callback** - `onTap` callback receives the new state as `(bool newState)` parameter
+- 🎨 **Better UX** - Toggle buttons update automatically when tapped
+
+### Changed
+- `ConfigurationItem.onTap` now receives `(bool newState)` parameter instead of `VoidCallback`
+- Removed `configurationsBuilder` parameter (no longer needed)
+- Improved internal state management for configuration items
+
+### Features
+- **Auto Toggle**: Switch buttons change automatically when tapped
+- **Initial Value**: Set initial state via `enabled` parameter
+- **No External State**: No need for `setState` or state variables
+- **State Callback**: Receive new state in `onTap` callback
+
+### Example
+```dart
+ConfigurationItem(
+  title: 'Network Inspector',
+  enabled: ChuckerFlutter.showOnRelease, // Initial value
+  onTap: (newState) {
+    // Toggle happens automatically!
+    // newState is the new enabled state
+    ChuckerFlutter.showOnRelease = newState;
+  },
+)
+```
+
+### Removed
+- `configurationsBuilder` parameter (replaced by automatic state management)
+
 ## [2.1.2] - 2025-01-15
 
 ### Documentation

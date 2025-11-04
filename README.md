@@ -10,7 +10,7 @@
 ### 1️⃣ Add the Package
 ```yaml
 dependencies:
-  base_url_switcher: ^2.1.2
+  base_url_switcher: ^2.2.0
 ```
 
 ### 2️⃣ Add URLs in main.dart
@@ -95,6 +95,55 @@ SimpleBaseUrlWrapper(
   ),
 )
 ```
+
+## ⚙️ Custom Configurations
+
+Add your own configuration items with **automatic toggle state management**! The toggle button manages its own state automatically - no need for external state management.
+
+### ✨ Key Features:
+- **Auto Toggle**: The switch button changes automatically when tapped
+- **Initial Value**: Set the initial state via `enabled` parameter
+- **State Callback**: Receive the new state in `onTap` callback
+- **No External State**: No need for `setState` or state variables
+
+```dart
+SimpleBaseUrlWrapper(
+  configurations: [
+    ConfigurationItem(
+      title: 'Network Inspector',
+      description: 'Enable network inspection',
+      enabled: ChuckerFlutter.showOnRelease, // Initial value from outside
+      onTap: (newState) {
+        // Your logic here - toggle happens automatically!
+        // newState is the new enabled state after toggle
+        ChuckerFlutter.isDebugMode = newState;
+        ChuckerFlutter.showOnRelease = newState;
+      },
+    ),
+    
+    // Another configuration - simple action
+    ConfigurationItem(
+      title: 'Clear Cache',
+      description: 'Clear all cached data',
+      enabled: true,
+      onTap: (newState) {
+        // Your clear cache logic here
+        // newState is true after toggle
+      },
+    ),
+  ],
+  child: YourWidget(),
+)
+```
+
+### 📝 How It Works:
+
+1. **Initial State**: The toggle button shows the value from `enabled` parameter
+2. **Auto Toggle**: When you tap, the button changes automatically (no `setState` needed!)
+3. **Callback**: The `onTap` callback receives the new state as `(bool newState)`
+4. **Your Logic**: Implement your feature logic in the callback
+
+**No need for external state management!** 🎉
 
 ## 📱 Show Environment Info
 
@@ -202,8 +251,22 @@ class SimpleBaseUrlWrapper extends StatelessWidget {
   final Widget child;        // Widget to wrap
   final String? password;    // Password (default: "admin")
   final int? tapCount;       // Number of taps (default: 7)
+  final List<ConfigurationItem>? configurations; // Custom configurations
 }
 ```
+
+### ConfigurationItem
+```dart
+class ConfigurationItem {
+  final String title;           // Configuration title
+  final String? description;    // Optional description
+  final bool enabled;           // Initial enabled state
+  final Function(bool newState)? onTap;  // Callback when tapped (receives new state)
+  final Widget? customWidget;    // Optional custom widget
+}
+```
+
+**Note**: The toggle button manages its own state automatically. The `enabled` parameter sets the initial state, and `onTap` receives the new state after toggle.
 
 ## 🚀 Complete Example
 

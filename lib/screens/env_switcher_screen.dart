@@ -27,6 +27,9 @@ class EnvSwitcherScreen extends StatefulWidget {
   
   /// تخصيص النمط
   final EnvSwitcherStyle? style;
+  
+  /// List of custom configurations
+  final List<ConfigurationItem>? configurations;
 
   const EnvSwitcherScreen({
     super.key,
@@ -38,6 +41,7 @@ class EnvSwitcherScreen extends StatefulWidget {
     this.showDescriptions = true,
     this.showInRelease = false,
     this.style,
+    this.configurations,
   });
 
   @override
@@ -47,11 +51,73 @@ class EnvSwitcherScreen extends StatefulWidget {
 class _EnvSwitcherScreenState extends State<EnvSwitcherScreen> {
   final EnvService _envService = EnvService.instance;
   Environment? _currentEnvironment;
+  
+  // Map to store internal state for each configuration item
+  final Map<String, bool> _configurationStates = {};
 
   @override
   void initState() {
     super.initState();
     _currentEnvironment = _envService.currentEnvironment;
+    // Initialize states from configurations
+    _initializeConfigurationStates();
+  }
+  
+  @override
+  void didUpdateWidget(EnvSwitcherScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Update states if configurations changed
+    if (oldWidget.configurations != widget.configurations) {
+      _updateConfigurationStates();
+    }
+  }
+  
+  /// Initialize configuration states from initial values
+  void _initializeConfigurationStates() {
+    final configs = _getConfigurations();
+    if (configs != null) {
+      for (final config in configs) {
+        if (!_configurationStates.containsKey(config.title)) {
+          _configurationStates[config.title] = config.enabled;
+        }
+      }
+    }
+  }
+  
+  /// Update configuration states when configurations change
+  void _updateConfigurationStates() {
+    final configs = _getConfigurations();
+    if (configs != null) {
+      for (final config in configs) {
+        // Only update if not already set (preserve user changes)
+        if (!_configurationStates.containsKey(config.title)) {
+          _configurationStates[config.title] = config.enabled;
+        }
+      }
+    }
+  }
+  
+  /// Get configurations list
+  List<ConfigurationItem>? _getConfigurations() {
+    return widget.configurations;
+  }
+  
+  /// Get current enabled state for a configuration (internal state or initial value)
+  bool _getConfigurationEnabled(ConfigurationItem config) {
+    return _configurationStates[config.title] ?? config.enabled;
+  }
+  
+  /// Toggle configuration state
+  void _toggleConfiguration(ConfigurationItem config) {
+    final currentState = _getConfigurationEnabled(config);
+    final newState = !currentState;
+    
+    setState(() {
+      _configurationStates[config.title] = newState;
+    });
+    
+    // Call the original onTap callback with new state if provided
+    config.onTap?.call(newState);
   }
 
   @override
@@ -116,6 +182,13 @@ class _EnvSwitcherScreenState extends State<EnvSwitcherScreen> {
             _buildEnvironmentsList(primaryColor),
             
             const SizedBox(height: 24),
+            
+            // Custom Configurations
+            if (_getConfigurations() != null && _getConfigurations()!.isNotEmpty)
+              _buildConfigurationsSection(primaryColor),
+            
+            if (_getConfigurations() != null && _getConfigurations()!.isNotEmpty)
+              const SizedBox(height: 24),
             
             // معلومات إضافية
             _buildInfoCard(primaryColor),
@@ -259,6 +332,7 @@ class _EnvSwitcherScreenState extends State<EnvSwitcherScreen> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             color: isCurrent ? primaryColor.withOpacity(0.1) : null,
             child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               leading: Container(
                 width: 12,
                 height: 12,
@@ -273,20 +347,27 @@ class _EnvSwitcherScreenState extends State<EnvSwitcherScreen> {
                   fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
                   color: isCurrent ? primaryColor : null,
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     env.baseUrl,
                     style: TextStyle(
                       color: isCurrent ? primaryColor.withOpacity(0.8) : Colors.grey[600],
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   if (env.description != null)
                     Text(
                       env.description!,
                       style: const TextStyle(fontSize: 12),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                 ],
               ),
@@ -341,6 +422,62 @@ class _EnvSwitcherScreenState extends State<EnvSwitcherScreen> {
                   );
                 }
               },
+            ),
+          );
+        }).toList(),
+      ],
+    );
+  }
+
+  Widget _buildConfigurationsSection(Color primaryColor) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Additional Settings',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
+        const SizedBox(height: 12),
+        ..._getConfigurations()!.map((config) {
+          final isEnabled = _getConfigurationEnabled(config);
+          return Card(
+            elevation: 2,
+            margin: const EdgeInsets.only(bottom: 8),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              leading: config.customWidget ?? Icon(
+                isEnabled ? Icons.check_circle : Icons.circle_outlined,
+                color: isEnabled ? Colors.green : Colors.grey,
+              ),
+              title: Text(
+                config.title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: isEnabled ? null : Colors.grey,
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+              subtitle: config.description != null
+                  ? Text(
+                      config.description!,
+                      style: TextStyle(
+                        color: isEnabled ? Colors.grey[600] : Colors.grey[400],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    )
+                  : null,
+              trailing: isEnabled
+                  ? Icon(Icons.toggle_on, color: primaryColor, size: 32)
+                  : Icon(Icons.toggle_off, color: Colors.grey, size: 32),
+              onTap: () => _toggleConfiguration(config),
+              enabled: true,
             ),
           );
         }).toList(),
@@ -406,6 +543,8 @@ class _EnvSwitcherScreenState extends State<EnvSwitcherScreen> {
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
               ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
             ),
           ),
         ],
