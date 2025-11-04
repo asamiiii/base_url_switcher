@@ -29,9 +29,22 @@ class EnvService {
   }) async {
     _prefs ??= await SharedPreferences.getInstance();
     
+    // Save user selection state before clearing
+    final savedUserSelection = _prefs?.getBool(_hasUserSelectedKey) ?? false;
+    final savedEnvName = _prefs?.getString(_currentEnvKey);
+    
     // If custom URLs are provided, clear existing environments and add them
     if (developmentUrl != null || productionUrl != null || stagingUrl != null) {
-      await instance.clear();
+      // Clear environments but preserve user selection
+      await _prefs?.remove(_environmentsKey);
+      instance.environments.clear();
+      
+      // Restore user selection state after clearing
+      if (savedUserSelection && savedEnvName != null) {
+        await _prefs?.setBool(_hasUserSelectedKey, savedUserSelection);
+        await _prefs?.setString(_currentEnvKey, savedEnvName);
+      }
+      
       await _setupCustomEnvironments(
         developmentUrl: developmentUrl,
         productionUrl: productionUrl,
@@ -81,16 +94,33 @@ class EnvService {
       await instance.addEnvironment(stagingEnv);
     }
     
-    // Set current environment to production (default) if exists, otherwise first available
-    if (instance.hasEnvironment(EnvironmentType.production.displayName)) {
-      // Production is the default - save it but don't mark as user selected
-      await _prefs?.setString(_currentEnvKey, EnvironmentType.production.displayName);
-    } else if (developmentUrl != null) {
-      // Fallback to development if production doesn't exist
-      await _prefs?.setString(_currentEnvKey, EnvironmentType.development.displayName);
-    } else if (stagingUrl != null) {
-      // Fallback to staging if neither production nor development exist
-      await _prefs?.setString(_currentEnvKey, EnvironmentType.staging.displayName);
+    // Set current environment to production (default) ONLY if user hasn't selected one before
+    final hasUserSelected = _prefs?.getBool(_hasUserSelectedKey) ?? false;
+    final savedEnvName = _prefs?.getString(_currentEnvKey);
+    
+    // Only set default if user hasn't selected an environment before
+    if (!hasUserSelected) {
+      if (instance.hasEnvironment(EnvironmentType.production.displayName)) {
+        // Production is the default - save it but don't mark as user selected
+        await _prefs?.setString(_currentEnvKey, EnvironmentType.production.displayName);
+      } else if (developmentUrl != null) {
+        // Fallback to development if production doesn't exist
+        await _prefs?.setString(_currentEnvKey, EnvironmentType.development.displayName);
+      } else if (stagingUrl != null) {
+        // Fallback to staging if neither production nor development exist
+        await _prefs?.setString(_currentEnvKey, EnvironmentType.staging.displayName);
+      }
+    } else {
+      // User has selected an environment before - verify it still exists
+      if (savedEnvName != null && instance.hasEnvironment(savedEnvName)) {
+        // Keep the saved environment
+        // Environment name is already saved, no need to change it
+      } else {
+        // Saved environment doesn't exist anymore, fallback to production
+        if (instance.hasEnvironment(EnvironmentType.production.displayName)) {
+          await _prefs?.setString(_currentEnvKey, EnvironmentType.production.displayName);
+        }
+      }
     }
   }
   
