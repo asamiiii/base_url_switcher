@@ -20,11 +20,10 @@ import 'package:base_url_switcher/base_url_switcher.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Just add URLs - everything else is automatic!
+  // Just add URLs - Production is always the default!
   await EnvService.initialize(
     developmentUrl: 'https://dev-api.mycompany.com',
     productionUrl: 'https://api.mycompany.com',
-    defaultEnvironment: EnvironmentType.development,
   );
   
   runApp(MyApp());

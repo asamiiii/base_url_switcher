@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.2.1] - 2025-01-15
 
+### Changed
+- 🎯 **Removed defaultEnvironment Parameter** - No longer needed, production is always the default
+- 🚀 **Production as Default** - Production environment is now always the default when available
+- 📝 **Simplified API** - `EnvService.initialize()` no longer requires `defaultEnvironment` parameter
+
 ### Fixed
 - 🐛 **Default Environment Behavior** - Fixed issue where default environment was always used on app restart
 - 🎯 **User Selection Persistence** - Default environment is now only used on first app launch

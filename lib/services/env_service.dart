@@ -26,7 +26,6 @@ class EnvService {
     String? developmentUrl,
     String? productionUrl,
     String? stagingUrl,
-    EnvironmentType? defaultEnvironment,
   }) async {
     _prefs ??= await SharedPreferences.getInstance();
     
@@ -37,7 +36,6 @@ class EnvService {
         developmentUrl: developmentUrl,
         productionUrl: productionUrl,
         stagingUrl: stagingUrl,
-        defaultEnvironment: defaultEnvironment,
       );
     }
   }
@@ -47,7 +45,6 @@ class EnvService {
     String? developmentUrl,
     String? productionUrl,
     String? stagingUrl,
-    EnvironmentType? defaultEnvironment,
   }) async {
     final instance = EnvService.instance;
     
@@ -57,18 +54,18 @@ class EnvService {
         name: EnvironmentType.development.displayName,
         baseUrl: developmentUrl,
         description: EnvironmentType.development.description,
-        isDefault: false, // We'll set the default after adding all environments
+        isDefault: false,
       );
       await instance.addEnvironment(devEnv);
     }
     
-    // Add production environment
+    // Add production environment (always default if exists)
     if (productionUrl != null) {
       final prodEnv = Environment(
         name: EnvironmentType.production.displayName,
         baseUrl: productionUrl,
         description: EnvironmentType.production.description,
-        isDefault: false, // We'll set the default after adding all environments
+        isDefault: true, // Production is always the default
       );
       await instance.addEnvironment(prodEnv);
     }
@@ -79,24 +76,21 @@ class EnvService {
         name: EnvironmentType.staging.displayName,
         baseUrl: stagingUrl,
         description: EnvironmentType.staging.description,
-        isDefault: false, // We'll set the default after adding all environments
+        isDefault: false,
       );
       await instance.addEnvironment(stagingEnv);
     }
     
-    // Set default environment after all environments are added
-    if (defaultEnvironment != null) {
-      // Check if the requested default environment exists
-      if (instance.hasEnvironment(defaultEnvironment.displayName)) {
-        await instance.setEnvironment(defaultEnvironment.displayName);
-      } else {
-        // Fallback to development if the requested environment doesn't exist
-        if (instance.hasEnvironment(EnvironmentType.development.displayName)) {
-          await instance.setEnvironment(EnvironmentType.development.displayName);
-        }
-      }
+    // Set current environment to production (default) if exists, otherwise first available
+    if (instance.hasEnvironment(EnvironmentType.production.displayName)) {
+      // Production is the default - save it but don't mark as user selected
+      await _prefs?.setString(_currentEnvKey, EnvironmentType.production.displayName);
     } else if (developmentUrl != null) {
-      await instance.setEnvironment(EnvironmentType.development.displayName);
+      // Fallback to development if production doesn't exist
+      await _prefs?.setString(_currentEnvKey, EnvironmentType.development.displayName);
+    } else if (stagingUrl != null) {
+      // Fallback to staging if neither production nor development exist
+      await _prefs?.setString(_currentEnvKey, EnvironmentType.staging.displayName);
     }
   }
   
@@ -156,9 +150,13 @@ class EnvService {
       );
     }
     
+    // Always prefer production as default, then first available
     final defaultEnv = environments.values.firstWhere(
-      (env) => env.isDefault,
-      orElse: () => environments.values.first,
+      (env) => env.name.toLowerCase() == EnvironmentType.production.displayName.toLowerCase(),
+      orElse: () => environments.values.firstWhere(
+        (env) => env.isDefault,
+        orElse: () => environments.values.first,
+      ),
     );
     
     // Mark that we're using default (first time)
