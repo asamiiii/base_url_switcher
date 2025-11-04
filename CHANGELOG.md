@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2025-01-15
+
+### Fixed
+- 🐛 **Default Environment Behavior** - Fixed issue where default environment was always used on app restart
+- 🎯 **User Selection Persistence** - Default environment is now only used on first app launch
+- 💾 **Environment Memory** - Selected environment is remembered after user changes it
+- ✅ **Smart Default Logic** - Once user selects an environment, it persists across app restarts
+
+### Technical Details
+- Added `has_user_selected_environment` flag to track user selections
+- Default environment is only used when `hasUserSelected` is false (first time)
+- After user changes environment, the selection is saved and persists
+- Reset to defaults now properly clears user selection flag
+
 ## [2.2.0] - 2025-01-15
 
 ### Added

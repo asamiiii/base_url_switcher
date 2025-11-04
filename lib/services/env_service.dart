@@ -7,6 +7,7 @@ import '../models/environment_type.dart';
 class EnvService {
   static const String _currentEnvKey = 'current_environment';
   static const String _environmentsKey = 'available_environments';
+  static const String _hasUserSelectedKey = 'has_user_selected_environment';
   
   static EnvService? _instance;
   static SharedPreferences? _prefs;
@@ -131,11 +132,20 @@ class EnvService {
   /// Get current environment
   Environment get currentEnvironment {
     final currentEnvName = _prefs?.getString(_currentEnvKey);
-    if (currentEnvName != null && environments.containsKey(currentEnvName.toLowerCase())) {
-      return environments[currentEnvName.toLowerCase()]!;
+    final hasUserSelected = _prefs?.getBool(_hasUserSelectedKey) ?? false;
+    
+    // If user has selected an environment before, use saved or first available
+    if (hasUserSelected) {
+      if (currentEnvName != null && environments.containsKey(currentEnvName.toLowerCase())) {
+        return environments[currentEnvName.toLowerCase()]!;
+      }
+      // If saved environment not found, return first available
+      if (environments.isNotEmpty) {
+        return environments.values.first;
+      }
     }
     
-    // Return default environment or first available
+    // First time opening app - return default environment
     if (environments.isEmpty) {
       // If no environments exist, return a default one
       return Environment(
@@ -150,6 +160,9 @@ class EnvService {
       (env) => env.isDefault,
       orElse: () => environments.values.first,
     );
+    
+    // Mark that we're using default (first time)
+    // Don't set hasUserSelected to true yet - only when user explicitly changes
     return defaultEnv;
   }
   
@@ -160,6 +173,8 @@ class EnvService {
     }
     
     await _prefs?.setString(_currentEnvKey, envName);
+    // Mark that user has selected an environment (no longer using default)
+    await _prefs?.setBool(_hasUserSelectedKey, true);
   }
   
   /// Add a new environment
@@ -196,11 +211,13 @@ class EnvService {
   /// Reset to default environments
   Future<void> resetToDefaults() async {
     await _prefs?.remove(_environmentsKey);
+    await _prefs?.remove(_hasUserSelectedKey); // Reset user selection flag
     final defaultEnv = _defaultEnvironments.values.firstWhere(
       (env) => env.isDefault,
       orElse: () => _defaultEnvironments.values.first,
     );
-    await setEnvironment(defaultEnv.name.toLowerCase());
+    await _prefs?.setString(_currentEnvKey, defaultEnv.name.toLowerCase());
+    // Don't set hasUserSelected - allow default to be used on next app start
   }
   
   /// Get environment by name
@@ -261,6 +278,7 @@ class EnvService {
   Future<void> clear() async {
     await _prefs?.remove(_currentEnvKey);
     await _prefs?.remove(_environmentsKey);
-    environments.clear();
+    await _prefs?.remove(_hasUserSelectedKey); // Clear user selection flag
+    environments.clear(); // Clear in-memory map
   }
 }
